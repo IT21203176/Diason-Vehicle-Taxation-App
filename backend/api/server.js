@@ -31,13 +31,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // Connect to database
-const connectDB = require("./config/db");
+const connectDB = require("../config/db");
 connectDB();
 
 // Routes
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/vehicles", require("./routes/vehicleRoutes"));
-//app.use("/api/exchange", require("./routes/exchangeRoutes"));
+app.use("/api/auth", require("../routes/authRoutes"));
+app.use("/api/vehicles", require("../routes/vehicleRoutes"));
+//app.use("/api/exchange", require("../routes/exchangeRoutes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -59,8 +59,8 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Start server
-if (process.env.NODE_ENV !== 'production') {
+// Start server only in local development
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   const server = app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
@@ -79,4 +79,5 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+// Export the app for Vercel
 module.exports = app;
