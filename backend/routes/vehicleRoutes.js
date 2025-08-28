@@ -1,50 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const vehicleController = require("../controllers/vehicleController");
-
 const { protect, requireRole } = require("../middleware/authMiddleware");
 
-// Create vehicle (Admin only)
-router.post(
-  "/",
-  protect,
-  requireRole("ADMIN"),
-  vehicleController.createVehicle
-);
+// Public routes for testing (you can protect these later)
+router.get("/", vehicleController.getVehicles);
+router.get("/manufacturers", vehicleController.getManufacturers);
 
-// Update vehicle (Admin only)
-router.put(
-  "/:id",
-  protect,
-  requireRole("ADMIN"),
-  vehicleController.updateVehicle
-);
+// Admin routes
+router.post("/", protect, requireRole(["ADMIN"]), vehicleController.createVehicle);
+router.put("/:id", protect, requireRole(["ADMIN"]), vehicleController.updateVehicle);
+router.delete("/:id", protect, requireRole(["ADMIN"]), vehicleController.deleteVehicle);
 
-// Delete vehicle (Admin only)
-router.delete(
-  "/:id",
-  protect,
-  requireRole("ADMIN"),
-  vehicleController.deleteVehicle
-);
+// Bulk operations
+router.post("/bulk-update-exchange-rate", protect, requireRole(["ADMIN", "AGENT"]), vehicleController.bulkUpdateExchangeRate);
 
-// Bulk update exchange rate (Both Admin and Agent can use)
-router.post(
-  "/bulk-update-exchange-rate",
-  protect,
-  vehicleController.bulkUpdateExchangeRate
-);
-
-// Get all vehicles (Protected)
-router.get("/", protect, vehicleController.getVehicles);
-
-// Get unique manufacturers (Protected)
-router.get("/manufacturers", protect, vehicleController.getManufacturers);
-
-// Get vehicles by manufacturer (Protected)
+// Specific routes
 router.get("/manufacturer/:manufacturer", protect, vehicleController.getVehiclesByManufacturer);
-
-// Get vehicle by ID (Protected)
 router.get("/:id", protect, vehicleController.getVehicleById);
 
 module.exports = router;
